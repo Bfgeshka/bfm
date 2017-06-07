@@ -1,4 +1,4 @@
-CFLAGS += -std=c99 -D_GNU_SOURCE -O3 -s -pthread -Wall -Wpedantic -Wextra ${UI_FLAGS} -export-dynamic
+CFLAGS += -std=c99 -D_GNU_SOURCE -O2 -s -pthread -Wall -Wpedantic -Wextra ${UI_FLAGS} -export-dynamic
 LDFLAGS += $(shell pkg-config --libs gtk+-2.0)
 PREFIX = /usr/local
 UI_FLAGS := $(shell pkg-config --cflags gtk+-2.0)
@@ -6,18 +6,12 @@ UI_FLAGS := $(shell pkg-config --cflags gtk+-2.0)
 NAME = bfm
 
 SRC = src/main.c
-#OBJ = ${SRC:.c=.o}
 
 all: clean options ${NAME}
 
 .c.o:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
-
-#$(OBJ): src/config.h
-
-#${NAME}: ${OBJ}
-#	@$(CC) $(LDFLAGS) -o $@ $(OBJ) $(CFLAGS)
 
 ${NAME}:
 	@$(CC) $(LDFLAGS) ${SRC} -o ${NAME} $(CFLAGS)
