@@ -1,7 +1,7 @@
 #define VERSION "0.1"
 
 /* Terminal command */
-#define TERMINAL (char *[]){ "st", "-e", "sh", NULL }
+#define TERMINAL (char *[]){ "st -e sh", NULL }
 
 /* Bookmarks */
 static const char *bookmarks[] = {
@@ -18,6 +18,7 @@ static const int polltime = 15;
 
 /* Command to be executed when activating a file */
 static const char *filecmd[] = { "~/bin/exec_rifle", NULL };
+static const char *rmcmd[] = { "rm -vfr", NULL };
 
 /* Showing of dotfiles by default */
 static gboolean show_dotfiles = FALSE;
@@ -55,9 +56,12 @@ static St_key keys[] = {
 
 	/* Reload dir*/
 	{ MODKEY, 				GDK_r,			bfm_reload,			{ 0 } },
+	{ 0, 					GDK_F5,			bfm_reload,			{ 0 } },
 
 	/* Bookmarks */
-	{ MODKEY,                GDK_1,         bfm_bookmark,       { .i = 0 } },
-	{ MODKEY,                GDK_2,         bfm_bookmark,       { .i = 1 } },
-	{ MODKEY,                GDK_3,         bfm_bookmark,       { .i = 2 } },
+	{ MODKEY,				GDK_1,			bfm_bookmark,		{ .i = 0 } },
+	{ MODKEY,				GDK_2,			bfm_bookmark,		{ .i = 1 } },
+	{ MODKEY,				GDK_3,			bfm_bookmark,		{ .i = 2 } },
+
+	{ 0, 					GDK_Delete,     bfm_remove,		{ 0 } },
 };

@@ -97,6 +97,7 @@ void     bfm_new_window    ( St_win *, const St_arg * );
 void     bfm_option_toggle ( St_win *, const St_arg * );
 void     bfm_read_files    ( St_win *, DIR * );
 void     bfm_reload        ( St_win *, const St_arg * );
+void     bfm_remove        ( St_win *, const St_arg * );
 void     bfm_set_path      ( St_win *, const St_arg * );
 void     bfm_spawn         ( const gchar * const *, const gchar * );
 void     bfm_dialog_text   ( GtkWidget *, GtkDialog * );
@@ -110,6 +111,7 @@ void     bfm_update        ( St_win * );
 void
 bfm_option_toggle( St_win * cr_w, const St_arg * args )
 {
+	(void)args;
 	cr_w->dtfl = !cr_w->dtfl;
 	bfm_reload( cr_w, NULL );
 }
@@ -246,7 +248,7 @@ bfm_move_cursor( St_win * cr_w, const St_arg * args )
 void
 bfm_make_dir( St_win * cr_w, const St_arg * args )
 {
-	gchar *path;
+	gchar * path;
 
 	g_return_if_fail( cr_w->path );
 
@@ -309,6 +311,27 @@ bfm_get_selected( St_win * cr_w )
 	g_list_free(lsel);
 
 	return files;
+}
+
+void
+bfm_remove ( St_win * cr_w, const St_arg * args )
+{
+	GList * sel = bfm_get_selected(cr_w);
+	GList * i = sel;
+	char name[BUFSIZ];
+
+	while (i)
+	{
+		sprintf( name, "%s/%s", cr_w->path, (char *)i->data );
+		bfm_spawn( rmcmd, name );
+
+		i = g_list_next(i);
+	}
+
+//	g_list_foreach( sel, (GFunc)gtk_tree_path_free, NULL );
+//	g_list_free(sel);
+
+	bfm_reload( cr_w, args );
 }
 
 /* Get modification time */
@@ -468,7 +491,8 @@ bfm_action( GtkWidget * w, GtkTreePath * p, GtkTreeViewColumn * c, St_win * cr_w
 	if ( chdir( cr_w->path ) < 0 )
 		g_warning( "chdir: %s", strerror(errno) );
 
-	realpath( name, fpath );
+	if ( realpath( name, fpath ) == NULL )
+		g_warning( "realpath: %s", strerror(errno) );
 	g_free(name);
 
 	if (is_dir)
@@ -569,10 +593,12 @@ bfm_list_dir( St_win * cr_w, const char * str )
 	g_return_if_fail(str);
 
 	if ( cr_w->path )
-		chdir( cr_w->path );
+		if ( chdir( cr_w->path ) == -1 )
+			g_warning( "chdir: %s", strerror(errno) );
 
 	char r_path[PATH_MAX];
-	realpath( str, r_path );
+	if ( realpath( str, r_path ) == NULL )
+		g_warning( "realpath: %s", strerror(errno) );
 
 	/* Try to open directory */
 	DIR * dir;
@@ -591,7 +617,8 @@ bfm_list_dir( St_win * cr_w, const char * str )
 
 	/* Fill window struct */
 	cr_w->path = g_strdup(r_path);
-	chdir( cr_w->path );
+	if ( chdir( cr_w->path ) == -1 )
+		g_warning( "chdir: %s", strerror(errno) );
 	bfm_get_mtime( cr_w->path, &cr_w->mtim );
 	gtk_window_set_title( GTK_WINDOW( cr_w->wind ), cr_w->path );
 
