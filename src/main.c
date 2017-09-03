@@ -109,7 +109,7 @@ void     bfm_update        ( St_win * );
 /* Functions */
 /* Changes option in runtime */
 void
-bfm_option_toggle( St_win * cr_w, const St_arg * args )
+bfm_option_toggle ( St_win * cr_w, const St_arg * args )
 {
 	(void)args;
 	cr_w->dtfl = !cr_w->dtfl;
@@ -118,40 +118,40 @@ bfm_option_toggle( St_win * cr_w, const St_arg * args )
 
 /* Checks if filename is beginnings with dot */
 int
-bfm_name_validat( const char * s, int dot_flag )
+bfm_name_validat ( const char * s, int dot_flag )
 {
 	return dot_flag ? ( g_strcmp0( s, "." ) != 0 && g_strcmp0( s, ".." ) != 0 ) : * s != '.';
 }
 
 /* Reload wrapper with time check */
 void
-bfm_update( St_win * cr_w )
+bfm_update ( St_win * cr_w )
 {
 	time_t mtime = 0;
 
 	if ( cr_w->path )
 		if ( bfm_get_mtime( cr_w->path, &mtime ) != 0 || mtime > cr_w->mtim )
-			bfm_reload(cr_w, NULL);
+			bfm_reload( cr_w, NULL );
 }
 
 /* Dialog response handler */
 void
-bfm_dialog_text( GtkWidget * w, GtkDialog * dialog )
+bfm_dialog_text ( GtkWidget * w, GtkDialog * dialog )
 {
-	(void) w;
+	(void)w;
 	gtk_dialog_response( dialog, 1 );
 }
 
 /* Create dialog with a text field */
 gchar *
-bfm_text_dialog( GtkWindow * p, const gchar * title, const gchar * text )
+bfm_text_dialog ( GtkWindow * p, const gchar * title, const gchar * text )
 {
 	GtkWidget * dialog = gtk_dialog_new_with_buttons( title, p, GTK_DIALOG_MODAL, NULL );
 	GtkWidget * entry = gtk_entry_new();
-	GtkWidget * area = gtk_dialog_get_content_area( GTK_DIALOG(dialog) );
+	GtkWidget * area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
 	gchar * str = NULL;
 
-	if (text)
+	if ( text )
 		gtk_entry_set_text( GTK_ENTRY(entry), text );
 
 	g_signal_connect( G_OBJECT(entry), "activate", G_CALLBACK(bfm_dialog_text), dialog );
@@ -168,19 +168,17 @@ bfm_text_dialog( GtkWindow * p, const gchar * title, const gchar * text )
 
 /* Invoke external executor */
 void
-bfm_spawn( const gchar * const * argv, const gchar * path )
+bfm_spawn ( const gchar * const * argv, const gchar * path )
 {
 	char exz[BUFSIZ];
-	sprintf( exz, "%s \"%s\"", *argv, path );
-	if(system(exz))
-	{
+	sprintf( exz, "%s \"%s\" &", *argv, path );
+	if( system(exz) )
 		fprintf( stderr, "execution of %s\n", exz );
-	}
 }
 
 /* Set path to required directory */
 void
-bfm_set_path( St_win * cr_w, const St_arg * args )
+bfm_set_path ( St_win * cr_w, const St_arg * args )
 {
 	char * path;
 
@@ -197,15 +195,15 @@ bfm_set_path( St_win * cr_w, const St_arg * args )
 
 /* Refresh directory list view */
 void
-bfm_reload( St_win * cr_w, const St_arg * args )
+bfm_reload ( St_win * cr_w, const St_arg * args )
 {
-	(void) args;
+	(void)args;
 	bfm_list_dir( cr_w, cr_w->path );
 }
 
 /* Moving on tree element */
 void
-bfm_move_cursor( St_win * cr_w, const St_arg * args )
+bfm_move_cursor ( St_win * cr_w, const St_arg * args )
 {
 	GtkMovementStep m;
 	gint v;
@@ -246,7 +244,7 @@ bfm_move_cursor( St_win * cr_w, const St_arg * args )
 
 /* Create a directory */
 void
-bfm_make_dir( St_win * cr_w, const St_arg * args )
+bfm_make_dir ( St_win * cr_w, const St_arg * args )
 {
 	gchar * path;
 
@@ -264,9 +262,9 @@ bfm_make_dir( St_win * cr_w, const St_arg * args )
 
 /* Keypress handler */
 gboolean
-bfm_keypress( GtkWidget * w, GdkEventKey * ev, St_win * cr_w )
+bfm_keypress ( GtkWidget * w, GdkEventKey * ev, St_win * cr_w )
 {
-	(void) w;
+	(void)w;
 	unsigned i;
 
 	/* Check earch entry in array */
@@ -288,7 +286,7 @@ bfm_keypress( GtkWidget * w, GdkEventKey * ev, St_win * cr_w )
 
 /* GTK handler for selected element */
 GList *
-bfm_get_selected( St_win * cr_w )
+bfm_get_selected ( St_win * cr_w )
 {
 	GtkTreeSelection * sel = gtk_tree_view_get_selection( GTK_TREE_VIEW( cr_w->tree ) );
 	GtkTreeModel * model;
@@ -298,7 +296,7 @@ bfm_get_selected( St_win * cr_w )
 	GList * files = NULL;
 	gchar * name;
 
-	while (node)
+	while ( node )
 	{
 		gtk_tree_model_get_iter( model, &iter, node->data );
 		gtk_tree_model_get( model, &iter, NAME_STR, &name, -1 );
@@ -336,12 +334,12 @@ bfm_remove ( St_win * cr_w, const St_arg * args )
 
 /* Get modification time */
 gint
-bfm_get_mtime( const gchar * path, time_t * time )
+bfm_get_mtime ( const gchar * path, time_t * time )
 {
 	struct stat st;
 	gint err;
 
-	g_return_val_if_fail(time, 0);
+	g_return_val_if_fail( time, 0 );
 
 	if ( ( err = stat( path, &st ) ) == 0 )
 		* time = st.st_mtime;
@@ -351,7 +349,7 @@ bfm_get_mtime( const gchar * path, time_t * time )
 
 /* Execute path */
 void
-bfm_dir_exec( St_win * cr_w, const St_arg * args )
+bfm_dir_exec ( St_win * cr_w, const St_arg * args )
 {
 	g_return_if_fail( cr_w->path && args->v );
 	bfm_spawn( args->v, cr_w->path );
@@ -359,10 +357,10 @@ bfm_dir_exec( St_win * cr_w, const St_arg * args )
 
 /* Proper window termination */
 void
-bfm_destroywin( GtkWidget * w, St_win * cr_w)
+bfm_destroywin ( GtkWidget * w, St_win * cr_w )
 {
-	(void) w;
-	if ( (windows = g_list_remove( windows, cr_w ) ) == NULL )
+	(void)w;
+	if ( ( windows = g_list_remove( windows, cr_w ) ) == NULL )
 		gtk_main_quit();
 
 	gtk_widget_destroy( cr_w->tree );
@@ -377,7 +375,7 @@ bfm_destroywin( GtkWidget * w, St_win * cr_w)
 
 /* Return string with modification time */
 gchar *
-bfm_col_ctr_time( const char * fmt, const struct tm * time )
+bfm_col_ctr_time ( const char * fmt, const struct tm * time )
 {
 	gchar buf[64];
 	strftime( buf, sizeof(buf), fmt, time );
@@ -386,7 +384,7 @@ bfm_col_ctr_time( const char * fmt, const struct tm * time )
 
 /* Return string with file size */
 gchar *
-bfm_col_ctr_size( size_t size )
+bfm_col_ctr_size ( size_t size )
 {
 	/* Bytes */
 	if ( size < 1024 )
@@ -404,7 +402,7 @@ bfm_col_ctr_size( size_t size )
 
 /* Return string with file permissions and type */
 gchar *
-bfm_col_ctr_perm( mode_t mode )
+bfm_col_ctr_perm ( mode_t mode )
 {
 	/* File type */
 	char ident;
@@ -422,20 +420,18 @@ bfm_col_ctr_perm( mode_t mode )
 
 	/* File permissions */
 	char *permstr[] = { "---", "--x", "-w-", "-wx", "r--", "r-x", "rw-", "rwx" };
-	return g_strdup_printf
-	   (
-	   "%c%s%s%s",
-	   ident,
-	   permstr[ ( mode >> 6 ) & 7 ],
-	   permstr[ ( mode >> 3 ) & 7 ],
-	   permstr[ mode & 7 ]
-	   );
+	return g_strdup_printf( "%c%s%s%s",
+	                        ident,
+	                        permstr[ ( mode >> 6 ) & 7 ],
+	                        permstr[ ( mode >> 3 ) & 7 ],
+	                        permstr[ mode & 7 ]
+	                      );
 }
 
 gint
-bfm_compare( GtkTreeModel * m, GtkTreeIter * a, GtkTreeIter * b, gpointer p )
+bfm_compare ( GtkTreeModel * m, GtkTreeIter * a, GtkTreeIter * b, gpointer p )
 {
-	(void) p;
+	(void)p;
 	gchar * name[2];
 	gint isdir[2];
 	gint ret;
@@ -455,7 +451,7 @@ bfm_compare( GtkTreeModel * m, GtkTreeIter * a, GtkTreeIter * b, gpointer p )
 
 /* Go to bookmark */
 void
-bfm_bookmark( St_win * cr_w, const St_arg * args )
+bfm_bookmark ( St_win * cr_w, const St_arg * args )
 {
 	if ( args->i >= 0 && (unsigned)args->i < ( sizeof(bookmarks) / sizeof(* bookmarks) ) )
 		bfm_list_dir( cr_w, (char *)bookmarks[ args->i ] );
@@ -463,10 +459,10 @@ bfm_bookmark( St_win * cr_w, const St_arg * args )
 
 /* Wrapper for element action */
 void
-bfm_action( GtkWidget * w, GtkTreePath * p, GtkTreeViewColumn * c, St_win * cr_w )
+bfm_action ( GtkWidget * w, GtkTreePath * p, GtkTreeViewColumn * c, St_win * cr_w )
 {
-	(void) w;
-	(void) c;
+	(void)w;
+	(void)c;
 
 	/* Declarations */
 	GtkTreeIter    iter;
@@ -477,16 +473,14 @@ bfm_action( GtkWidget * w, GtkTreePath * p, GtkTreeViewColumn * c, St_win * cr_w
 
 	/* Creating tree model */
 	gtk_tree_model_get_iter( model, &iter, p );
-	gtk_tree_model_get
-	   (
-	   model,
-	   &iter,
-	   NAME_STR,
-	   &name,
-	   IS_DIR,
-	   &is_dir,
-	   -1
-	   );
+	gtk_tree_model_get( model,
+	                    &iter,
+	                    NAME_STR,
+	                    &name,
+	                    IS_DIR,
+	                    &is_dir,
+	                    -1
+	                  );
 
 	if ( chdir( cr_w->path ) < 0 )
 		g_warning( "chdir: %s", strerror(errno) );
@@ -495,7 +489,7 @@ bfm_action( GtkWidget * w, GtkTreePath * p, GtkTreeViewColumn * c, St_win * cr_w
 		g_warning( "realpath: %s", strerror(errno) );
 	g_free(name);
 
-	if (is_dir)
+	if ( is_dir )
 		/* open directory */
 		bfm_list_dir( cr_w, fpath );
 	else
@@ -504,7 +498,7 @@ bfm_action( GtkWidget * w, GtkTreePath * p, GtkTreeViewColumn * c, St_win * cr_w
 }
 
 void
-bfm_read_files( St_win * cr_w, DIR * dir )
+bfm_read_files ( St_win * cr_w, DIR * dir )
 {
 	GtkListStore    * store = GTK_LIST_STORE( gtk_tree_view_get_model( GTK_TREE_VIEW( cr_w->tree ) ) );
 	GtkTreeIter       iter;
@@ -521,21 +515,16 @@ bfm_read_files( St_win * cr_w, DIR * dir )
 	gtk_list_store_clear(store);
 
 	/* disable sort to speed up insertion */
-	gtk_tree_sortable_set_sort_column_id
-	   (
-	   sortable,
-	   GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID,
-	   GTK_SORT_ASCENDING
-	   );
+	gtk_tree_sortable_set_sort_column_id( sortable,
+	                                      GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID,
+	                                      GTK_SORT_ASCENDING
+	                                    );
 
 	while ( ( e = readdir(dir) ) )
 	{
-		if
-		(
-			bfm_name_validat( e->d_name, cr_w->dtfl )
-			&&
-			( stat( e->d_name, &st ) == 0 )
-		)
+		if ( bfm_name_validat( e->d_name, cr_w->dtfl )
+		&& ( stat( e->d_name, &st ) == 0 )
+		   )
 		{
 			if ( S_ISDIR( st.st_mode ) )
 				name_str = g_strdup_printf( "%s/", e->d_name );
@@ -548,17 +537,15 @@ bfm_read_files( St_win * cr_w, DIR * dir )
 			size_str = bfm_col_ctr_size( st.st_size );
 
 			gtk_list_store_append( store, &iter );
-			gtk_list_store_set
-			   (
-			   store,
-			   &iter,
-			   NAME_STR, name_str,
-			   PERMS_STR, perms_str,
-			   SIZE_STR, size_str,
-			   MTIME_STR, mtime_str,
-			   IS_DIR, S_ISDIR(st.st_mode),
-			   -1
-			   );
+			gtk_list_store_set( store,
+			                    &iter,
+			                    NAME_STR, name_str,
+			                    PERMS_STR, perms_str,
+			                    SIZE_STR, size_str,
+			                    MTIME_STR, mtime_str,
+			                    IS_DIR, S_ISDIR(st.st_mode),
+			                    -1
+			                  );
 
 			g_free(name_str);
 			g_free(mtime_str);
@@ -573,22 +560,23 @@ bfm_read_files( St_win * cr_w, DIR * dir )
 
 /* Return directory on upper level */
 gchar *
-bfm_prev_dir( gchar * path )
+bfm_prev_dir ( gchar * path )
 {
 	gchar * p;
 	if ( ( p = g_strrstr( path, "/" ) ) )
 	{
-		if (p == path)
-			* (p + 1) = '\0';
+		if ( p == path )
+			* ( p + 1 ) = '\0';
 		else
 			* p = '\0';
 	}
+
 	return path;
 }
 
 /* Get directory content */
 void
-bfm_list_dir( St_win * cr_w, const char * str )
+bfm_list_dir ( St_win * cr_w, const char * str )
 {
 	g_return_if_fail(str);
 
@@ -630,38 +618,34 @@ bfm_list_dir( St_win * cr_w, const char * str )
 
 /* Creates new main window */
 St_win *
-bfm_create_window()
+bfm_create_window ( void )
 {
-	St_win        * cr_w;
+	St_win          * cr_w;
 	GtkCellRenderer * rend;
 	GtkListStore    * store;
 	GtkTreeSortable * sortable;
 
 	/* Initialisation */
-	cr_w       = g_malloc( sizeof(St_win) );
+	cr_w       = g_malloc(sizeof(St_win));
 	cr_w->path = NULL;
-	cr_w->wind = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	cr_w->wind = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	cr_w->dtfl = show_dotfiles;
 
 	/* Scroll widget usage */
 	cr_w->scrl = gtk_scrolled_window_new( NULL, NULL );
-	gtk_scrolled_window_set_policy
-	   (
-	   GTK_SCROLLED_WINDOW( cr_w->scrl ),
-	   GTK_POLICY_AUTOMATIC,
-	   GTK_POLICY_ALWAYS
-	   );
+	gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( cr_w->scrl ),
+	                                GTK_POLICY_AUTOMATIC,
+	                                GTK_POLICY_ALWAYS
+	                              );
 
 	/* Creating storage for directory content */
-	store = gtk_list_store_new
-			   (
-			   5,
-			   G_TYPE_STRING, /* Name */
-			   G_TYPE_STRING, /* Prms */
-			   G_TYPE_STRING, /* Size */
-			   G_TYPE_STRING, /* Mdfd */
-			   G_TYPE_BOOLEAN
-			   );
+	store = gtk_list_store_new ( 5,
+			                     G_TYPE_STRING, /* Name */
+			                     G_TYPE_STRING, /* Prms */
+			                     G_TYPE_STRING, /* Size */
+			                     G_TYPE_STRING, /* Mdfd */
+			                     G_TYPE_BOOLEAN
+			                   );
 	sortable = GTK_TREE_SORTABLE(store);
 
 	/* Creating a widget for list */
@@ -688,12 +672,12 @@ bfm_create_window()
 	rend = gtk_cell_renderer_text_new();
 	MCR_SET_COLUMN( "Modified", MTIME_STR );
 
+	#undef MCR_SET_COLUMN
+
 	/* Name column is expanded, others are using only required width */
-	gtk_tree_view_column_set_expand
-	   (
-	   gtk_tree_view_get_column( GTK_TREE_VIEW( cr_w->tree ), 0 ),
-	   TRUE
-	   );
+	gtk_tree_view_column_set_expand( gtk_tree_view_get_column( GTK_TREE_VIEW( cr_w->tree ), 0 ),
+	                                 TRUE
+	                               );
 
 	/* Setup list sorting */
 	gtk_tree_sortable_set_sort_func( sortable, NAME_STR, bfm_compare, NULL, NULL );
@@ -714,7 +698,7 @@ bfm_create_window()
 
 /* Wrapper for new main window */
 void
-bfm_new_window( St_win * cr_w, const St_arg * args )
+bfm_new_window ( St_win * cr_w, const St_arg * args )
 {
 	/* Create new window */
 	St_win * new = bfm_create_window();

@@ -1,7 +1,7 @@
 #define VERSION "0.1"
 
 /* Terminal command */
-#define TERMINAL (char *[]){ "st -e sh", NULL }
+#define TERMINAL (char *[]){ "st", NULL }
 
 /* Bookmarks */
 static const char *bookmarks[] = {
